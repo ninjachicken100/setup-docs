@@ -1,1 +1,1 @@
-# setup-docs
+This repository is meant for development testing on openshift local cluster. 
