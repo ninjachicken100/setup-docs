@@ -1,0 +1,57 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: keycloak-postgresql-ss
+  namespace: keycloak
+spec:
+  serviceName: keycloak-postgresql-ss
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:
+        name: postgres-ss-volume
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: crc-csi-hostpath-provisioner
+  template:
+    metadata:
+      labels:
+        app: keycloak-postgresql-ss
+    spec:
+      volumes:
+        - name: cache-volume
+          emptyDir: {}
+      containers:
+        - name: keycloak-postgresql-ss
+          image: 'bitnamilegacy/postgresql:16.4.0-debian-12-r12'
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-secret
+                  key: POSTGRES_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-secret
+                  key: POSTGRES_DATABASE
+            - name: PGDATA
+              value: /data/pgdata
+          volumeMounts:
+            - name: postgres-ss-volume # change to postgres-ss-volume
+              mountPath: /data
+  selector:
+    matchLabels:
+      app: keycloak-postgresql-ss

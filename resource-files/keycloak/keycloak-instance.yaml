@@ -1,0 +1,53 @@
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: keycloak-ai-platforms
+  namespace: keycloak
+  labels:
+    app: sso
+spec:
+  instances: 1
+
+  bootstrapAdmin:
+    user:
+      secret: keycloak-instance-1-initial-admin
+
+  update:
+    strategy: RecreateOnImageChange
+
+  networkPolicy:
+    enabled: true
+
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 10s
+
+  # Keycloak will run HTTPS internally (service port typically 8443)
+  http:
+    tlsSecret: my-tls-secret
+
+  # This is the *public* hostname you want Keycloak to advertise
+  hostname:
+    hostname: keycloak-ai-platforms-service-keycloak.apps-crc.testing
+    strict: true
+    strictBackchannel: true
+
+  # Make Keycloak trust the router's forwarded headers (scheme/host/port)
+  db:
+    vendor: postgres
+    host: keycloak-postgres-svc.keycloak.svc.cluster.local
+    port: 5432
+    database: keycloak
+    usernameSecret:
+      name: keycloak-db-secret
+      key: POSTGRES_USERNAME
+    passwordSecret:
+      name: keycloak-db-secret
+      key: POSTGRES_PASSWORD
+
+  additionalOptions:
+  - name: proxy-headers
+    value: xforwarded
+  - name: hostname-strict-https
+    value: "true"

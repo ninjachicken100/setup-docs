@@ -1,0 +1,53 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+  name: keycloak-cert
+  namespace: keycloak
+spec:
+  commonName: keycloak.svc.gemini.sl
+  dnsNames:
+    - keycloak.apps.gemini.sl #replace with your dns names
+    - keycloak.svc.gemini.sl
+  issuerRef:
+    kind: ClusterIssuer
+    name: gemini-issuer #replace with your cluster issuer
+  secretName: keycloak-tls-secret #to be referenced later
+
+# -- Use this if generated via openssl
+# -- to replace with your own pem certificate
+
+# apiVersion: route.openshift.io/v1
+# kind: Route
+# metadata:
+#   name: keycloak-service
+#   namespace: keycloak
+# spec:
+#   host: keycloak-service-keycloak.apps-crc.testing
+#   to:
+#     kind: Service
+#     name: keycloak-service
+#   port:
+#     targetPort: https
+#   tls:
+#     termination: reencrypt
+#     insecureEdgeTerminationPolicy: Redirect
+#     destinationCACertificate: |
+#       -----BEGIN CERTIFICATE-----
+#       MIIDSTCCAjGgAwIBAgIUBNaw+vhyG9/tMNg9OCf/u7Ah0nowDQYJKoZIhvcNAQEL
+#       BQAwIjEgMB4GA1UEAwwXa2V5Y2xvYWsuYXBwcy5nZW1pbmkuc2wwHhcNMjYwMTI4
+#       MDM1NjQ4WhcNMjcwMTI4MDM1NjQ4WjAiMSAwHgYDVQQDDBdrZXljbG9hay5hcHBz
+#       LmdlbWluaS5zbDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJbql+jk
+#       0y3p7eyGk4Cjahsvpd3D4F6w1au7aRch7SErBIKhJ/808bsboMfhg4ivl9Arhyt3
+#       //TQjkZg0oljOeckuo4jq0I0RY4pPr6VDtRY663dNw5Cq7/bkvSeNYleFhwqsRl2
+#       b6D4/o8ZseUnurH20NSjPnTXmZOH44c6V0rilMkzGvfFlb1IYdCDldALYnGTqET2
+#       WmUhalbqk8zvcslGgZsT+voJTnyuhJwgI9gUVEcr1Q2kqkSy8lAc3zVc89npQ2vp
+#       9+IFa+0/YbssB4f2/gWGudWYLakMH7wU0HDsJtmR8Our7F1v5dgncBMWCuIojCij
+#       dO/SVvdwcnv0m2cCAwEAAaN3MHUwHQYDVR0OBBYEFEero5fb1pP7EcrUfO35aHV0
+#       79+0MB8GA1UdIwQYMBaAFEero5fb1pP7EcrUfO35aHV079+0MA8GA1UdEwEB/wQF
+#       MAMBAf8wIgYDVR0RBBswGYIXa2V5Y2xvYWsuYXBwcy5nZW1pbmkuc2wwDQYJKoZI
+#       hvcNAQELBQADggEBAH88Cy9CPKZ5QpESWHJb32T7M48iCGLfvyS+S/F3AWPHHKYD
+#       CiPg3LHd9AWh+glL3DR547rSubewpTry3FWr6WN14R28xg8maoqnRuBnc5TlfvJL
+#       FmrC7KAtxEaHb087lfcxIV8cEt4+zQHloQd+T9dTIX7LJl6NMuVj4UADo36N3/et
+#       W4WbDYlIWgZIVVX3FAE//+TB83CmQPN+6KU2PUP6tUraNpzZjF6yEWQ6jSSasILS
+#       PgHaFWjEbuGG+75v7LRPSVYrs64NLTOuimlb/i0UIL4Dflu6mldhATwVKyWPRfHe
+#       W3roNdJAxSfyodewXf8su7yN7f6yPZ8CUeCev6g=
+#       -----END CERTIFICATE-----

@@ -8,7 +8,7 @@ This guide is for Dev Team to deploy AgentGateway on **OpenShift Local** as part
  For files that are applied, please refer to the [Github Repo](https://github.com/ninjachicken100/setup-docs/settings)
 
 ### Step 1: agentgateway Control Plane
-We will be Installing the AgentGateway Control Plane which is required for ...
+We will be installing the agentgateway Control Plane and applying Custom Resources to the Openshift Local Cluster
 
 **Create new namespace**
 ```
@@ -56,6 +56,8 @@ At the end of this section, you should see a agentgateway pod spun up in the age
 > Please refer to the [guide](https://agentgateway.dev/docs/kubernetes/latest/install/helm/) for more information.
 
 ### Step 2: agentgateway Proxy
+We will be installing the agentgateway proxy which will be used as the target entrypoint to the vllm subsequently
+
 
 Apply the agentgateway proxy CR
 
