@@ -4,7 +4,7 @@ This guide is for Dev Team to deploy Keycloak on **OpenShift Local** for develop
 
 
 ## Install Guide
-For files that are applied, please refer to the [Github Repo](https://github.com/ninjachicken100/setup-docs/settings)
+For files that are applied, please refer to the [Github Repo](https://github.com/ninjachicken100/setup-docs)
 
 
 ### Step 1: Installing Keycloak 

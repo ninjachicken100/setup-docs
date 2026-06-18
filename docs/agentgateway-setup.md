@@ -5,7 +5,7 @@ This guide is for Dev Team to deploy AgentGateway on **OpenShift Local** as part
 
 
 ## Install Guide
- For files that are applied, please refer to the [Github Repo](https://github.com/ninjachicken100/setup-docs/settings)
+ For files that are applied, please refer to the [Github Repo](https://github.com/ninjachicken100/setup-docs)
 
 ### Step 1: agentgateway Control Plane
 We will be installing the agentgateway Control Plane and applying Custom Resources to the Openshift Local Cluster

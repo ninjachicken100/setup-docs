@@ -6,6 +6,11 @@
 3. Passthrough GPU to Openshift Local CRC VM
 4. Install and Run NVIDIA GPU Operator
 
+
+## Install Guide
+For files that are applied, please refer to the [Github Repo](https://github.com/ninjachicken100/setup-docs)
+
+
 ## 1. Setup Openshift Local
 
 Download the latest CRC version from: 

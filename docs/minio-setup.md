@@ -4,7 +4,7 @@ This guide is for Dev Team to deploy MinIO S3 Bucket on **OpenShift Local** for 
 
 
 ## Install Guide
-For files that are applied, please refer to the [Github Repo](https://github.com/ninjachicken100/setup-docs/settings)
+For files that are applied, please refer to the [Github Repo](https://github.com/ninjachicken100/setup-docs)
 
 
 ### MinIO Operator
