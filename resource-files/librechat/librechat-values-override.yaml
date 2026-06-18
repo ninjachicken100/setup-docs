@@ -1,0 +1,200 @@
+# -- MongoDB configuration
+mongodb:
+  # -- To update this MongoDB container image configuration with appropriate fields
+  image:
+    # -- Image registry
+    registry: docker.io
+    # -- MongoDB image repository (official image)
+    repository: mongo
+    # -- MongoDB image tag
+    tag: "8.2.3-noble"
+
+  # -- MongoDB authentication settings
+  auth:
+    # -- Enable authentication
+    enabled: true
+    # -- Existing Kubernetes secret containing MongoDB credentials
+    existingSecret: mongodb-auth
+
+  # -- MongoDB persistent storage configuration
+  persistence:
+    # -- Enable persistence
+    enabled: true
+    # -- Size of the persistent volume
+    size: 8Gi
+    # -- Mount path inside the MongoDB container
+    mountPath: /data/db
+
+  # -- Extra environment variables injected into MongoDB container
+  extraEnvVars:
+    # -- MongoDB root username
+    - name: MONGO_INITDB_ROOT_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: mongodb-auth
+          key: mongodb-root-username
+
+    # -- MongoDB root password
+    - name: MONGO_INITDB_ROOT_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: mongodb-auth
+          key: mongodb-root-password
+
+    # -- Initial database to create
+    - name: MONGO_INITDB_DATABASE
+      value: "LibreChat"
+
+# -- Extra volumes mounted into the LibreChat pod
+volumes:
+  # -- Remount logs to avoid EACCES permission issues
+  - name: librechat-logs
+    emptyDir: {}
+
+  # -- Remount uploads to avoid EACCES permission issues
+  - name: uploads
+    emptyDir: {}
+
+# -- Volume mounts for the LibreChat container
+volumeMounts:
+  # -- Mount path for LibreChat logs
+  - name: librechat-logs
+    mountPath: /app/logs
+
+  # -- Mount path for LibreChat uploads
+  - name: uploads
+    mountPath: /app/uploads
+
+# -- LibreChat application configuration
+librechat:
+
+  # -- Environment variables passed directly to LibreChat
+  configEnv:
+    # -- Allow new user registration
+    ALLOW_REGISTRATION: "false"
+    # -- Allow email/password login
+    ALLOW_EMAIL_LOGIN: "false"
+    # -- Allow social / OIDC login
+    ALLOW_SOCIAL_LOGIN: "true"
+    # -- Allow insecure TLS for OpenID (dev only, disable in production)
+    OPENID_INSECURE: "true"
+    # -- Disable TLS certificate verification (dev only, disable in production)
+    NODE_TLS_REJECT_UNAUTHORIZED: "0"
+    # -- Trust X-Forwarded-* headers when behind a reverse proxy
+    TRUST_PROXY: "1"
+    # -- OpenID Connect issuer URL (Keycloak realm endpoint)
+    # Format: https://<keycloak-host>/realms/<realm-name>
+    OPENID_ISSUER: "https://<YOUR_KEYCLOAK_HOST>/realms/<YOUR_REALM>"
+    # -- OpenID Connect client ID registered in Keycloak
+    # Must match the client ID you created in Keycloak for LibreChat
+    OPENID_CLIENT_ID: "<YOUR_OIDC_CLIENT_ID>"
+    # -- OpenID Connect scopes requested during authentication
+    OPENID_SCOPE: "openid profile email"
+    # -- OpenID Connect callback path used by LibreChat
+    OPENID_CALLBACK_URL: "/oauth/openid/callback"
+    # -- Public server URL used by LibreChat (API & redirects)
+    # This is the externally reachable URL of your LibreChat instance
+    DOMAIN_SERVER: "LIBRECHAT_ROUTE"
+    # -- Public client URL used by LibreChat (frontend origin)
+    DOMAIN_CLIENT: "LIBRECHAT_ROUTE"
+
+  # -- LibreChat YAML configuration file content
+  configYamlContent:
+    # -- LibreChat config schema version
+    version: "1.3.1"
+
+    # -- File routing configuration
+    # Add one entry per endpoint name below to disable file uploads for that endpoint.
+    # The name must exactly match the `name` field of the corresponding custom endpoint.
+    fileConfig:
+      endpoints:
+        default:
+          disabled: true
+        # <YOUR_MODEL_DISPLAY_NAME_1>:   # e.g. "Llama-3-8B"
+        #   disabled: true
+        # <YOUR_MODEL_DISPLAY_NAME_2>:   # repeat for each additional model
+        #   disabled: true
+
+    # -- Endpoint definitions
+    # Add one entry per vLLM-served model. Copy the block and fill in the four
+    # fields marked with <...>; everything else can stay as-is.
+    endpoints:
+      custom:
+        # ---------- Model 1 ----------
+        - name: "<YOUR_MODEL_DISPLAY_NAME_1>"
+          # Display name shown in the LibreChat UI — choose something human-readable,
+          # e.g. "Llama-3-8B" or "Mistral-7B-Instruct".
+
+          apiKey: "user_provided"
+          # Leave as "user_provided" — LibreChat will pass the user's API key through.
+
+          baseURL: "<YOUR_VLLM_BASE_URL>"
+          # The /v1 endpoint of your vLLM server or proxy, e.g.:
+          #   Direct vLLM:      http://vllm-service.my-namespace.svc.cluster.local:8000/v1
+          #   Via AgentGateway: http://agentgateway-proxy.agentgateway-system.svc.cluster.local:80/v1
+
+          headers:
+            x-model: "<YOUR_MODEL_ID_1>"
+            # The exact model identifier your vLLM server was started with,
+            # e.g. "meta-llama/Meta-Llama-3-8B-Instruct" or a short alias like "llama3-8b".
+            # Omit this block entirely if routing directly to a single-model vLLM instance.
+
+          models:
+            default: ["<YOUR_MODEL_ID_1>"]
+            # Must match the x-model value above. Add more IDs if the endpoint
+            # serves multiple models, e.g. ["model-a", "model-b"].
+            fetch: false
+
+          titleConvo: true
+          titleModel: "current_model"
+          titleMessageRole: "user"
+          summarize: false
+          summaryModel: "current_model"
+          forcePrompt: false
+
+
+    # -- UI / interface feature toggles
+    interface:
+      endpointsMenu: true
+      agents: false
+      sidePanel: false
+      fileSearch: false
+      mcpServers:
+        use: false
+        share: false
+        create: false
+        public: false
+      
+      # -- Disable people picker features
+      peoplePicker:
+        users: false
+        groups: false
+        roles: false
+
+      # -- Disable file-related UI features
+      fileCitations: false
+      fileSearch: false
+      fileUploads: false
+
+
+# -- Ingress configuration
+ingress:
+  enabled: true
+  annotations:
+    route.openshift.io/termination: "edge"
+  hosts:
+    - host: "<YOUR_LIBRECHAT_HOST>"
+      # Must match DOMAIN_SERVER / DOMAIN_CLIENT above (without the https:// prefix)
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+# -- Meilisearch configuration
+meilisearch:
+  # -- Enable Meilisearch (disable if not used)
+  enabled: false
+
+  # -- Meilisearch persistence configuration
+  persistence:
+    enabled: false
