@@ -8,10 +8,15 @@
 
 
 ## Install Guide
+
+Before running the setup, ensure all system and application updates are installed.
+
+
 For files that are applied, please refer to the [Github Repo](https://github.com/ninjachicken100/setup-docs)
 
 
 ## 1. Setup Openshift Local
+
 
 Download the latest CRC version from: 
 
