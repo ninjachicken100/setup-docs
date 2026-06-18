@@ -58,7 +58,7 @@ TOKEN=$(curl -sk -X POST \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=password" \
   -d "client_id=<client-id>>" \
-  -d "client_secret=VUhmr3YxnO53pIZCswfRN8rYGeYLGDTU" \
+  -d "client_secret=<client-secret>" \
   -d "username=<username>" \
   -d "password=<password>" \
   | jq -r '.access_token')
