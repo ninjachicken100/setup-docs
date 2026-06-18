@@ -49,3 +49,17 @@ In the Clients tab, click on 'Create Client' and configure with the following se
 Under the Credentials tab, copy the client Secret and paste it into the secret file to be applied for the application
 
 *e.g. if using librechat, paste into `OPENID_CLIENT_SECRET:` in the librechat-sample-secrets.yaml*
+
+To access the vLLM models set up in **02-agentgateway-setup.md**, run the following command in CLI to obtain the token and paste it inside the model api key.
+
+```
+TOKEN=$(curl -sk -X POST \
+  https://keycloak-ai-platforms-service-keycloak.apps-crc.testing/realms/chat-applications/protocol/openid-connect/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=password" \
+  -d "client_id=<client-id>>" \
+  -d "client_secret=VUhmr3YxnO53pIZCswfRN8rYGeYLGDTU" \
+  -d "username=<username>" \
+  -d "password=<password>" \
+  | jq -r '.access_token')
+```
