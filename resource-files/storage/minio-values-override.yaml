@@ -1,0 +1,24 @@
+# -- Number of pod replicas
+replicas: 1
+mode: standalone
+
+# -- Pod security context configuration. 
+# Run 'oc get events' to debug which UID is permissible
+securityContext:
+  # -- User ID to run the container process
+  runAsUser: {}
+  # -- Primary group ID for the container process
+  runAsGroup: {}
+  # -- File system group ID for volume permissions
+  fsGroup: {}
+
+# -- Persistence configuration for object storage
+persistence:
+  # -- Size of the PVC to create (if set and no existingClaim, a new PVC is created)
+  size: 50Gi # adjust bucket space as required
+
+# -- Resource configuration
+resources:
+  requests:
+    # -- CPU memory configuration
+    memory: 8Gi
